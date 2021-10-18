@@ -1,0 +1,9 @@
+GET http://localhost:8080/hello
+Accept: application/json
+
+###
+
+GET https://httpbin.org/delay/5
+Accept: application/json
+
+
