@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBodilessEntity
+import java.net.URI
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.util.UUID
 
 @SpringBootApplication
@@ -35,13 +37,15 @@ class MyHelloController(
 
 @Service
 class DelayService(
-    private val webClient: WebClient,
+    private val javaClient: java.net.http.HttpClient,
 ) {
     suspend fun delay() {
-        webClient.get()
-            .uri("$ENDPOINT_URL/$DELAY_SECONDS")
-            .retrieve()
-            .awaitBodilessEntity()
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("$ENDPOINT_URL/$DELAY_SECONDS"))
+            .GET()
+            .build()
+
+        javaClient.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
     companion object {
@@ -62,6 +66,9 @@ class HttpClientConfiguration {
 
     @Bean
     fun webClient(): WebClient = WebClient.create()
+
+    @Bean
+    fun javaClient(): java.net.http.HttpClient = java.net.http.HttpClient.newHttpClient()
 }
 
 /**
