@@ -17,9 +17,9 @@ fun main(args: Array<String>) {
 class MyHelloController {
 
 	@GetMapping("/hello")
-	fun helloThere() {
+	suspend fun helloThere() {
 		trace("Hello there!")
-		Thread.sleep(5_000)
+		delay(5_000)
 		trace("General Kenobi!")
 	}
 }
