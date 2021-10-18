@@ -1,5 +1,8 @@
 package com.example.springwebwebclient
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -8,7 +11,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForObject
 import java.util.UUID
 
 @SpringBootApplication
@@ -32,10 +34,10 @@ class MyHelloController(
 
 @Service
 class DelayService(
-    private val restTemplate: RestTemplate,
+    private val ktorClient: HttpClient,
 ) {
     suspend fun delay() {
-        restTemplate.getForObject<Unit>(url = "$ENDPOINT_URL/$DELAY_SECONDS")
+        ktorClient.get<Unit>(urlString = "$ENDPOINT_URL/$DELAY_SECONDS")
     }
 
     companion object {
@@ -50,6 +52,9 @@ data class UUIDServiceResponse(val uuid: UUID)
 class HttpClientConfiguration {
     @Bean
     fun restTemplate(): RestTemplate = RestTemplate()
+
+    @Bean
+    fun ktorClient(): HttpClient = HttpClient(CIO)
 }
 
 /**
